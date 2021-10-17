@@ -19,9 +19,13 @@ const arrayOfRandomness = [];
 
 exports.handler = async function (event, context, callback) {
   console.log(JSON.stringify(`Event: ${event}`));
+  console.log(event, JSON.stringify(event));
   let vanityNumbers = [];
 
-  const { phoneNumber } = event;
+  let { phoneNumber } = event;
+
+  phoneNumber = phoneNumber.replace("+", "");
+
   try {
     vanityNumbers = await convertNumberToVanityNumber(
       phoneNumber,
@@ -32,7 +36,7 @@ exports.handler = async function (event, context, callback) {
     );
 
     console.log(`Finished collecting 6 digit combinations: ${vanityNumbers}`);
-    if (vanityNumbers < DESIRED_NUMBER_OF_VANITY_NUMBERS) {
+    if (vanityNumbers < parseInt(DESIRED_NUMBER_OF_VANITY_NUMBERS)) {
       let fiveDigitNumbers = await convertNumberToVanityNumber(
         phoneNumber,
         5,
@@ -48,7 +52,7 @@ exports.handler = async function (event, context, callback) {
       return;
     }
 
-    if (vanityNumbers < DESIRED_NUMBER_OF_VANITY_NUMBERS) {
+    if (vanityNumbers < parseInt(DESIRED_NUMBER_OF_VANITY_NUMBERS)) {
       let fourDigitNumbers = await convertNumberToVanityNumber(
         phoneNumber,
         4,
@@ -65,7 +69,7 @@ exports.handler = async function (event, context, callback) {
       return;
     }
 
-    if (vanityNumbers < DESIRED_NUMBER_OF_VANITY_NUMBERS) {
+    if (vanityNumbers < parseInt(DESIRED_NUMBER_OF_VANITY_NUMBERS)) {
       let threeDigitNumbers = await convertNumberToVanityNumber(
         phoneNumber,
         3,
@@ -100,7 +104,7 @@ async function insertVanityNumbers(vanityNumbers, phoneNumber) {
   console.log(`\n Final vanity number generation results: ${vanityNumbers}`);
 
   try {
-    if (vanityNumbers.length !== DESIRED_NUMBER_OF_VANITY_NUMBERS) {
+    if (vanityNumbers.length !== parseInt(DESIRED_NUMBER_OF_VANITY_NUMBERS)) {
       console.log(
         `We do not yet have enough vanity numbers to add to the db. Generating more... `
       );
@@ -109,7 +113,6 @@ async function insertVanityNumbers(vanityNumbers, phoneNumber) {
         phoneNumber
       );
     }
-    console.log(vanityNumbers);
     const params = {
       TableName: "Callers",
       Item: {
@@ -122,10 +125,9 @@ async function insertVanityNumbers(vanityNumbers, phoneNumber) {
       },
     };
 
-    console.log(params);
+    console.log("ZZ FINAL", params);
 
     const response = await docClient.put(params).promise();
-    console.log("acsn response; ", response);
   } catch (error) {
     console.log(`DocClient request fail: ${error}`);
   }
@@ -298,7 +300,9 @@ async function convertNumberToVanityNumber(
 }
 
 async function handleMissingVanityNumbers(vanityNumbers, phoneNumber) {
-  if (arrayOfRandomness?.length !== DESIRED_NUMBER_OF_VANITY_NUMBERS) {
+  if (
+    arrayOfRandomness?.length !== parseInt(DESIRED_NUMBER_OF_VANITY_NUMBERS)
+  ) {
     await convertNumberToVanityNumber(phoneNumber, 3, 0, vanityNumbers);
   }
 

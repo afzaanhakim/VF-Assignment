@@ -10,7 +10,9 @@ const docClient = new AWS.DynamoDB.DocumentClient({
 exports.handler = async function (event, context, callback) {
   console.log(JSON.stringify(`Event: ${event}`));
 
-  const { phoneNumber } = event;
+  let { phoneNumber } = event.Details.Parameters;
+
+  phoneNumber = phoneNumber.replace("+", "");
   if (phoneNumber) {
     const params = {
       TableName: "Callers",
