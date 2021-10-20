@@ -12,9 +12,10 @@ exports.handler = async function (event, context, callback) {
 
   let { phoneNumber } = event.Details.Parameters;
 
-  phoneNumber = phoneNumber.replace("+", "");
+  phoneNumber = phoneNumber.replace("+", ""); //removing special character from phone number
   if (phoneNumber) {
     const params = {
+      //setting params for DDB
       TableName: "Callers",
       Key: {
         id: phoneNumber,
@@ -23,14 +24,15 @@ exports.handler = async function (event, context, callback) {
 
     try {
       const response = await docClient.get(params).promise();
-      console.log(response);
 
       if (response && response.Item) {
+        //checking if response from DDB with Item for existing caller exists in DDB
         console.log(
           `The caller is in our system, returning 3 random vanity numbers.`
         );
 
         const vanityNumbersToSpeak = getRandomVanityNumbers(
+          //getting 3 random vanity Numbers to speak from list of 5 in DDB
           3,
           response.Item,
           []
@@ -64,15 +66,16 @@ function getRandomVanityNumbers(
 ) {
   if (arrayOfRandomVanityNumbers.length < numberOfVanityNumbersToGet) {
     for (let i = 0; i < numberOfVanityNumbersToGet; i++) {
-      let randomInt = getRandomInt(1, 5);
+      let randomInt = getRandomInt(1, 5); //calling helper function to retrieve a random index between 1 - 5 for the vanity number
 
       if (
         !arrayOfRandomVanityNumbers.includes(
+          //checking if the vanityNumber is not already pushed to the array of random Vanity numbers to speak
           vanityNumbers[`vanityNumber${randomInt}`]
         )
       ) {
         arrayOfRandomVanityNumbers.push(
-          vanityNumbers[`vanityNumber${randomInt}`]
+          vanityNumbers[`vanityNumber${randomInt}`] //If numbr not in array then we push that vanitynumber
         );
 
         console.log(
@@ -88,6 +91,7 @@ function getRandomVanityNumbers(
           arrayOfRandomVanityNumbers
         );
       } else {
+        // vanity number is already in the array
         console.log(
           vanityNumbers[`vanityNumber${randomInt}`],
           " Is already in array of random vanity numbers; ",
@@ -101,6 +105,7 @@ function getRandomVanityNumbers(
       }
     }
   } else {
+    //  accrued enough numbers to speak back to the caller
     console.log(
       "We have enough items in the array to return; ",
       arrayOfRandomVanityNumbers
