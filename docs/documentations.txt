@@ -1,0 +1,40 @@
+1.) Reasons for implementing this solution
+
+This assignment has been an excellent learning opportunity for me terms of using AWS Connect, DynamoDB and Lambdas. 
+
+
+  The way I have implemented this solution is to check for valid english words based on the digits in a phonenumber after the country code and area code, and then if the condition is not fulfilled, then add random letters tht associate on a dialpad-with a specific number. I have taken the last 7 digits  of a valid american or canadian phone number into consideration. The best/valid vanity numbers are based on the words being an actual english word. If that condition is not fulfilled I have added random words to the number (would not take this approach for production level code if I had the resources) 
+
+  I have used a recursive approach for the convert vanity number function, if the 7 numbers do not complete a full english word, my solution will try again with the last 6 numbers and so on until it reaches a limit of the last 4 letters keeping in mind the limit of retries (delcared), where it will check again if they are valid words or not, if not, it will pass it into another random variable that is later joined to the array of vanity numbers finally produced. To help with avoiding dulplication, I am also using helper functions to get random integers and check whether a value exists in an array.
+
+2.) The main problems I faced with this challenge:
+
+
+- Understanding and creating the contact flow as well as making requests to get and put phoneNumbers correctly to the DDB as I had not used before. I mainly followed a lot of linkedin learning videos, youtube videos, and AWS documentation for invoking Lambda functions in Connect.
+
+- Validating words and then creating the logic for reducing number of digits from the phoneNumber to get a valid word.
+
+- Invocation of lambda asynchronously due to the limitation of 8 second timeout and having the caller callback to listen to his vanity numbers.
+
+- AWS caching my results caused the problem of mixing up vanity numbers and generating incorrect vanity numbers (adding numbers from a previous caller) as I had wrongly declared the variable outside the handler.
+
+- A bug where I continued to overwrite existing valid numbers and would end up with 1 valid number in all cases. To deal with this I fixed it by passing vanity numbers array to each  appropriate function call and mutating it.  
+
+- Running into infinite loops with my API requests.
+
+
+3.) If I had some more time with this assignment
+
+  - I would ensure better error handling and a way to text message the user their vanity numbers. 
+
+  - Also would aim to have a function that would deal with more edge-cases such as other country codes and number formats.
+
+ -  A better function to lookup valid words and get different combinations for 3 or 4 digits in a number so that I could have two valid words in the number, I did think of using a word-check package but that would make this an easy escape.
+
+ - Testing: Adding appropriate testing to provide maximum coverage
+
+
+
+
+
+

@@ -9,7 +9,7 @@ const {
   DESIRED_NUMBER_OF_VANITY_NUMBERS,
   AWS_REGION,
   DICTIONARY_API_KEY,
-} = process.env; // These items are required to be present in AWS Lambda environment variables and THEY WILL BE CACHED BECAUSE THEY ARE ABOVE THE HANDLER!
+} = process.env; // These items are required to be present in AWS Lambda environment variables!
 
 const docClient = new AWS.DynamoDB.DocumentClient({
   region: AWS_REGION,
@@ -66,7 +66,7 @@ exports.handler = async function (event, context, callback) {
       );
 
       console.log(
-        `Finished collecting 5 digit combinations: ${vanityNumbers}, created ${fourDigitNumbers}.`
+        `Finished collecting 4 digit combinations: ${vanityNumbers}, created ${fourDigitNumbers}.`
       );
     } else {
       // we have enough numbers for the caller, just insert them
@@ -75,7 +75,7 @@ exports.handler = async function (event, context, callback) {
     }
 
     if (vanityNumbers?.length < parseInt(DESIRED_NUMBER_OF_VANITY_NUMBERS)) {
-      console.log(`Starting to collect 4 digit combinations.`);
+      console.log(`Starting to collect 3 digit combinations.`);
 
       //  attempt to generate enough 3 letter vanity numbers
       let threeDigitNumbers = await convertNumberToVanityNumber(
@@ -86,7 +86,7 @@ exports.handler = async function (event, context, callback) {
       );
 
       console.log(
-        `Finished collecting 5 digit combinations: ${vanityNumbers}, created ${threeDigitNumbers}.`
+        `Finished collecting 3 digit combinations: ${vanityNumbers}, created ${threeDigitNumbers}.`
       );
     } else {
       // we have enough numbers for the caller, just insert them
